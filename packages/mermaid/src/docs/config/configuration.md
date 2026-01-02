@@ -1,46 +1,37 @@
-# Configuration
+graph TD
+    %% 1. Penerimaan & Verifikasi
+    Start((Mulai)) --> A1[Terima Pesanan: WA/Email/Portal]
+    A1 --> A2{Verifikasi Kelengkapan Data & Cek Kredit Klien}
+    A2 -- Data Tidak Lengkap / Limit Kredit Lampaui Batas --> A1
+    A2 -- Data OK & Kredit Aman --> A3[Input ke Sistem TMS - Booking ID]
 
-When mermaid starts, configuration is extracted to determine a configuration to be used for a diagram. There are 3 sources for configuration:
+    %% 2. Koordinasi & Konfirmasi
+    A3 --> B1[Koordinasi dengan Bagian Planning - Cek Armada]
+    B1 --> B2[Kirim Booking Confirmation ke Pelanggan]
 
-- The default configuration
-- Overrides at the site level are set by the initialize call, and will be applied to all diagrams in the site/app. The term for this is the **siteConfig**.
-- Frontmatter (v10.5.0+) - diagram authors can update selected configuration parameters in the frontmatter of the diagram. These are applied to the render config.
-- Directives (Deprecated by Frontmatter) - diagram authors can update selected configuration parameters directly in the diagram code via directives. These are applied to the render config.
+    %% 3. Penerbitan Dokumen
+    B2 --> C1[Terbitkan Surat Jalan & Manifest Muatan]
+    C1 --> C2[Terbitkan Instruksi Kerja Pengemudi]
+    C2 --> C3[Serah Terima Dokumen ke Pengemudi]
 
-**The render config** is configuration that is used when rendering by applying these configurations.
+    %% 4. Eksekusi & POD
+    C3 --> D1[Proses Pengiriman]
+    D1 --> D2[Penerimaan Barang oleh Konsumen]
+    D2 --> D3[Upload Foto SJ ke Cloud Storage - Arsip Digital]
+    D3 --> D4[Verifikasi Fisik SJ Asli - TTD & Stempel Basah]
 
-## Frontmatter config
+    %% 5. Penanganan Masalah & Closing
+    D4 --> E1{Ada Ketidaksesuaian/Kerusakan?}
+    E1 -- Ya --> E2[Hubungi Pelanggan & Bagian Klaim - Maks 1x24 Jam]
+    E1 -- Tidak --> E3[Serah Berkas POD ke Bagian Keuangan]
+    E2 --> E3
+    E3 --> E4[Invoicing & Pencatatan KPI Bulanan]
+    E4 --> E5[Pengarsipan Fisik - Folder per Bulan/Pelanggan]
+    E5 --> End((Selesai))
 
-The entire mermaid configuration (except the secure configs) can be overridden by the diagram author in the frontmatter of the diagram. The frontmatter is a YAML block at the top of the diagram.
-
-```mermaid-example
----
-title: Hello Title
-config:
-  theme: base
-  themeVariables:
-    primaryColor: "#00ff00"
----
-flowchart
-	Hello --> World
-
-```
-
-## Theme configuration
-
-## Starting mermaid
-
-```mermaid
-sequenceDiagram
-	Site->>mermaid: initialize
-	Site->>mermaid: content loaded
-	mermaid->>mermaidAPI: init
-```
-
-## Initialize
-
-The initialize call is applied **only once**. It is called by the site integrator in order to override the default configuration at a site level.
-
-## configApi.reset
-
-This method resets the configuration for a diagram to the overall site configuration, which is the configuration provided by the site integrator. Before each rendering of a diagram, reset is called at the very beginning.
+    %% Styling
+    style Start fill:#007bff,color:#fff
+    style End fill:#007bff,color:#fff
+    style A2 fill:#fff4dd,stroke:#d4a017
+    style E1 fill:#fff4dd,stroke:#d4a017
+diagram, reset is called at the very beginning.
